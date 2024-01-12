@@ -150,12 +150,12 @@
     {:width 616 :height 353 :label :main-capsule}))
 
 (defn generate-boxart-files []
-  (-> (p/$ mkdir -p ~boxart-dir) p/check)
   (->> boxart-defs vals (remove #(-> % :skip-generate))
        (map (partial create-resized-file
                      {:base-path boxart-base-logo
                       :verbose?  true
-                      :overwrite true}))))
+                      :overwrite true}))
+       doall))
 
 (defn aseprite-export-boxart-png [b-opts]
   (let [path     (boxart->path b-opts)
