@@ -1,33 +1,17 @@
--- TODO color-wheel for tag distinction, or custom colors per tag (idle/attacking/being attacked)
--- TODO support upserting colors/etc other data per tag/frame (tags can have user-data!)
-
 -- data --------------------------------------------------------------
 
 local tags = {
   -- Shared tags
-  "idle",
-  "_jump",
-  "falling", -- TODO move SS from 'fall' to 'falling'
-  "_dead",
+  "idle", "_jump", "_dead",
 
   -- SS tags
-  "running", -- TODO move SS from 'run' to 'running'
-  "air",
-  "_knocked_back", "_dying",
-
-  -- TD tags
-  "idle_down", "idle_up", "idle_right",
-  "run_down", "run_up", "run_right",
+  "run", "air", "_knocked_back", "_dying",
 
   -- BEU tags
-  "_landed", "walk",
-  "_punch", "_punch_2",
-  "_kick",  "_jump", "_jump_kick",
-  "_punched", "_kicked",
-  "_grab", "_grabbed",
-  "_throw", "thrown",
+  "_landed", "walk", "_jump", "_jump_kick",
+  "_punch", "_punch_2", "_kick", "_punched", "_kicked",
+  "_grab", "_grabbed", "_throw", "thrown",
   "_hit_ground", "_get_up",
-
 }
 
 local color_wheel = {
@@ -51,7 +35,6 @@ end
 
 function colorize_tags()
   for i, t in ipairs(app.sprite.tags) do
-    -- TODO support overwrites via specific tag metadata
     t.color = color_wheel[i % #color_wheel + 1]
     -- TODO support random fluctuations
     -- t.color.red -= 10..20
