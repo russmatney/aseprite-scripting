@@ -2,16 +2,10 @@
 
 local tags = {
   -- Shared tags
-  "idle", "_jump", "_dead",
-
-  -- SS tags
-  "run", "air", "_knocked_back", "_dying",
-
-  -- BEU tags
+  "idle", "_jump", "_dead", "run", "air", "_knocked_back", "_dying",
   "_landed", "walk", "_jump", "_jump_kick",
   "_punch", "_punch_2", "_kick", "_punched", "_kicked",
-  "_grab", "_grabbed", "_throw", "thrown",
-  "_hit_ground", "_get_up",
+  "_grab", "_grabbed", "_throw", "thrown", "_hit_ground", "_get_up",
 }
 
 local color_wheel = {

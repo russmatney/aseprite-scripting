@@ -26,6 +26,8 @@ aseprite -b \
     --script scripts/resize_canvas.lua
 #+end_src
 
+> GOTCHA: be sure to pass ~--script-param~ ahead of ~--script~!
+
 That might be all you want, but if you're interested in running a number of
 these, [[file:bb/tasks.clj][bb/tasks.clj]] contains a spec for all the Steam 'Coming Soon' page
 required images, which looks something like:
@@ -62,8 +64,37 @@ via another passed option - but this was where I landed when shipping Dot Hop's
 coming soon images.
 
 ** Creating tags from a list
-The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite itself.
+The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite
+itself - see below for help Aseprite find your scripts.
 
+The use-case for this script was a need to create a large number of animations
+in several sprites. I got tired of creating tags by hand, when I already had a
+list of them in text format.
+
+This script lets you define a big list of tags:
+
+#+begin_src lua
+local tags = {
+  -- Shared tags
+  "idle", "_jump", "_dead", "run", "air", "_knocked_back", "_dying",
+  "_landed", "walk", "_jump", "_jump_kick",
+  "_punch", "_punch_2", "_kick", "_punched", "_kicked",
+  "_grab", "_grabbed", "_throw", "thrown", "_hit_ground", "_get_up",
+}
+#+end_src
+
+It runs through each tag, and any tag that doesn't already exist on the sprite
+is created.
+
+Beware that there are some gotchas - if anything crazy happens, you can 'undo'
+the command (this is the benefit for running the code within
+~app.transaction()~).
+
+There is the beginning of a color wheel idea to help distinguish all the new
+tags from each other. Perhaps this will be extended to support some more useful
+per-tag colors at some point.
+
+* Invoking a script from aseprite
 Aseprite looks for script files in ~~/.config/aseprite/scripts/*~. (You can open
 this dir via: ~File > Scripts > Open Scripts Folder~)
 
@@ -79,8 +110,8 @@ but you shouldn't need to do that in-between scripts.
 
 Then you can start writing a script in your project, and invoke it from Aseprite
 via ~File > Scripts > <project-name> > <script-name>~.
-
-Check out the script itself for implementation details.
 * Aseprite Resources
-- API Docs:
-- Aseprite Extensions by Kacper Wozniak: https://thkaspar.itch.io/
+- API docs: https://www.aseprite.org/api/app#app
+- CLI docs: https://aseprite.org/docs/cli/
+- Bonus: Aseprite Extensions by Kacper Wozniak: https://thkaspar.itch.io/
+  worth the extensions and reading the code!
