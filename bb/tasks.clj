@@ -2,7 +2,6 @@
   (:require
    [babashka.process :as p]
    [babashka.fs :as fs]
-   [babashka.tasks :as bb.tasks]
    [clojure.java.io :as io]
    [clojure.string :as string]))
 
@@ -38,14 +37,6 @@
 (comment
   (is-mac?))
 
-#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defn shell-and-log
-  ([x] (shell-and-log {} x))
-  ([opts x]
-   (println x)
-   (when (seq opts) (println opts))
-   (bb.tasks/shell opts x)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Aseprite
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -56,7 +47,7 @@
     "aseprite"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Exporting sprite sheets
+;; Watch and export sprite sheets
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn export-pixels-sheet [path]
@@ -132,36 +123,30 @@
 (defn create-resized-file
   [{:keys [base-path overwrite verbose?]}
    {:keys [width height base] :as opts}]
-  (let [new-path (boxart->path opts)
-        exists?  (fs/exists? new-path)]
+  (let [new-path  (boxart->path opts)
+        exists?   (fs/exists? new-path)
+        base-path (or base base-path)]
     (when (and exists? overwrite)
       (fs/delete new-path))
     (if (and (not overwrite) exists?)
       (println "Skipping existing new-path " new-path)
       (do
         (println (str "Creating aseprite file: " (str new-path)))
-
-        (let [base (or base base-path)]
-          (fs/copy base new-path))
-
-        (let [result
-              (->
-                ^{:out :string}
-                (p/$ ~(aseprite-bin-path)
-                     -b
-                     ~(str new-path)
-                     --script-param ~(str "width=" width)
-                     --script-param ~(str "height=" height)
-                     --script "scripts/resize_canvas.lua"
-                     )
-                p/check :out)]
+        (let [result (-> ^{:out :string}
+                         (p/$ ~(aseprite-bin-path) -b ;; 'batch' mode, don't open the UI
+                              ~base-path
+                              ;; pass script-params BEFORE --script arg
+                              --script-param ~(str "filename=" new-path)
+                              --script-param ~(str "width=" width)
+                              --script-param ~(str "height=" height)
+                              --script "scripts/resize_canvas.lua")
+                         p/check :out)]
           (when verbose? (println result)))))))
 
 (comment
   (name :main-capsule)
   (create-resized-file
-    {:base-path boxart-base-logo
-     :overwrite true :verbose? true}
+    {:base-path boxart-base-logo :overwrite true :verbose? true}
     {:width 616 :height 353 :label :main-capsule}))
 
 (defn generate-boxart-files []
@@ -173,7 +158,6 @@
                       :overwrite true}))))
 
 (defn aseprite-export-boxart-png [b-opts]
-  (println "Exporting with opts" b-opts)
   (let [path     (boxart->path b-opts)
         png-path (boxart->path b-opts (:export-ext b-opts ".png"))]
     (println "Exporting" path "as" png-path)
@@ -182,7 +166,6 @@
 
 (defn export-all-boxart []
   (->> boxart-defs vals (map aseprite-export-boxart-png) doall))
-
 
 (comment
   (generate-boxart-files)

@@ -5,8 +5,8 @@
 
   watch tasks/watch
 
-  regenerate-steam-boxart
-  {:description "Regenerate and reexport steam boxart"
+  regenerate-boxart
+  {:description "Regenerate and re-export boxart"
    :task
    (do
      (tasks/generate-boxart-files)

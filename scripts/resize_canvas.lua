@@ -15,7 +15,7 @@ end
 
 -- change_sprite_size --------------------------------------------------------------
 
-function change_sprite_size(w, h)
+function change_sprite_size(new_filename, w, h)
   local s = app.sprite
   print("current sprite", s, s.width, s.height, s.pixelRatio)
 
@@ -53,16 +53,17 @@ function change_sprite_size(w, h)
   s:crop(new_x, new_y, new_width, new_height)
   print("cropped sprite", s.width, s.height)
 
-  s:saveAs(s.filename)
-  print("sprite re-saved")
+  s:saveAs(new_filename)
+  print("new file saved", new_filename)
 end
 
 -- main --------------------------------------------------------------
 
 app.transaction(
   "main", function()
+    local filename = app.params["filename"]
     local width = tonumber(app.params["width"])
     local height = tonumber(app.params["height"])
 
-    change_sprite_size(width, height)
+    change_sprite_size(filename, width, height)
 end)
