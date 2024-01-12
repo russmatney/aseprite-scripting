@@ -1,6 +1,19 @@
 #+title: Aseprite Scripting Examples
 
+Some approaches to automating [[https://www.aseprite.org/][Aseprite]] workflows, featuring lua and some
+[[https://github.com/babashka/babashka][babashka]] usage.
+
 * Examples
+These examples:
+
+- are things I implemented when working on my own games
+- have been ripped out and simplified
+- are not intended to be consumable/reusable
+
+My goal is to share approaches to scripting Aseprite things.
+
+I hope these make it easier for you to create your own scripts and tools!
+
 ** Generating Box Art
 The [[file:scripts/resize_canvas.lua][resize_canvas.lua]] script can be passed to aseprite like:
 
@@ -39,19 +52,35 @@ bb regenerate-boxart
 
 This depends on a few 'base' aseprite files existing:
 
-- `assets/boxart/base_logo.aseprite`
-- `assets/boxart/base_logo_wide.aseprite`
-- `assets/boxart/base_logo_no_bg.aseprite`
-- `assets/boxart/base_bg_no_logo.aseprite`
+- ~assets/boxart/base_logo.aseprite~
+- ~assets/boxart/base_logo_wide.aseprite~
+- ~assets/boxart/base_logo_no_bg.aseprite~
+- ~assets/boxart/base_bg_no_logo.aseprite~
 
 The script could get smarter, and toggle the logo or background at generate time
 via another passed option - but this was where I landed when shipping Dot Hop's
 coming soon images.
 
-** Creating tags from a large list
+** Creating tags from a list
+The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite itself.
 
-[[file:scripts/add_some_tags.lua][add_some_tags.lua]]
+Aseprite looks for script files in ~~/.config/aseprite/scripts/*~. (You can open
+this dir via: ~File > Scripts > Open Scripts Folder~)
 
+You could add a script there manually, but I like to symlink a per-project
+~scripts~ directory in there:
+
+#+begin_src sh
+ln -s ~/russmatney/<project-name>/scripts ~/.config/aseprite/scripts/<project-name>
+#+end_src
+
+You'll likely need to ~File > Scripts > Rescan Scripts Folder~ at least once,
+but you shouldn't need to do that in-between scripts.
+
+Then you can start writing a script in your project, and invoke it from Aseprite
+via ~File > Scripts > <project-name> > <script-name>~.
+
+Check out the script itself for implementation details.
 * Aseprite Resources
 - API Docs:
 - Aseprite Extensions by Kacper Wozniak: https://thkaspar.itch.io/
