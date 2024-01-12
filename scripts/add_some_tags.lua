@@ -53,7 +53,7 @@ end
 
 -- main --------------------------------------------------------------
 
-app.transaction("main", function()
+app.transaction("add_some_tags", function()
   -- TODO first clone the current frame and move it to the end, so new tags/frames are created at the end
   -- BUG without this fix ^ a bunch of new frames are added to the 'current' animation
   add_tags()

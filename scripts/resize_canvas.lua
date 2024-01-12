@@ -59,7 +59,7 @@ end
 -- main --------------------------------------------------------------
 
 app.transaction(
-  "main", function()
+  "resize_canvas", function()
     local filename = app.params["filename"]
     local width = tonumber(app.params["width"])
     local height = tonumber(app.params["height"])

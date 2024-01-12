@@ -138,7 +138,7 @@ is created.
 
 Beware that there are some gotchas - if anything crazy happens, you can 'undo'
 the command (this is the benefit for running the code within
-~app.transaction()~).
+~app.transaction("your-command", fn)~).
 
 There is the beginning of a color wheel idea to help distinguish all the new
 tags from each other. Perhaps this will be extended to support some more useful
