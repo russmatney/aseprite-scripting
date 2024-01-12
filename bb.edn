@@ -1,10 +1,7 @@
-{:paths ["src"]
+{:paths ["bb"]
  :tasks
- {:requires ([ase-scripting.tasks :as tasks]
-             [babashka.fs :as fs]
-             [clojure.string :as string])
-
-  :init (println "bb.edn running task")
+ {:requires ([tasks :as tasks])
+  :init     (println "bb.edn running task")
 
   watch tasks/watch
 

@@ -1,4 +1,4 @@
-(ns ase-scripting.tasks
+(ns tasks
   (:require
    [babashka.process :as p]
    [babashka.fs :as fs]
