@@ -14,6 +14,52 @@ My goal is to share approaches to scripting Aseprite things.
 
 I hope these make it easier for you to create your own scripts and tools!
 
+** Aseprite CLI ~--script~ hello world
+
+Given a directory with files:
+
+#+begin_src sh
+hello_world.lua
+my_art.aseprite
+#+end_src
+
+Where ~hello_world.lua~ is:
+
+#+begin_src lua
+app.transaction(
+  "main", function()
+    print("hello world!")
+
+    for k, t in pairs(app.params) do
+      print("argument key:", k, "value:", t)
+    end
+end)
+#+end_src
+
+You can invoke the script with the Aseprite cli:
+
+#+begin_src sh
+aseprite -b \
+    my_art.aseprite \
+    --script-param whatevs=foo
+    --script-param bananas=bar
+    --script hello_world.lua
+#+end_src
+
+- ~-b~ means 'batch' mode, which prevents the Aseprite UI from starting up
+
+#+begin_quote
+GOTCHA: be sure to pass ~--script-param~ ahead of ~--script~!
+#+end_quote
+
+And you should see:
+
+#+begin_src sh
+hello world!
+argument key:   whatevs value:  foo
+argument key:   bananas value:  bar
+#+end_src
+
 ** Generating Box Art
 The [[file:scripts/resize_canvas.lua][resize_canvas.lua]] script can be passed to aseprite like:
 
@@ -26,9 +72,8 @@ aseprite -b \
     --script scripts/resize_canvas.lua
 #+end_src
 
-> GOTCHA: be sure to pass ~--script-param~ ahead of ~--script~!
-
-That might be all you want, but if you're interested in running a number of
+*** A bit of babashka
+That might be all you want, but if you're interested in managing a number of
 these, [[file:bb/tasks.clj][bb/tasks.clj]] contains a spec for all the Steam 'Coming Soon' page
 required images, which looks something like:
 
@@ -59,9 +104,12 @@ This depends on a few 'base' aseprite files existing:
 - ~assets/boxart/base_logo_no_bg.aseprite~
 - ~assets/boxart/base_bg_no_logo.aseprite~
 
-The script could get smarter, and toggle the logo or background at generate time
+The `_wide` version of the logo image was introduced to prevent the logo from
+cropping poorly - note that the resize_canvas script is not very sophisticated.
+
+The script could get smarter, and toggle the logo or background at generate-time
 via another passed option - but this was where I landed when shipping Dot Hop's
-coming soon images.
+first Coming Soon images.
 
 ** Creating tags from a list
 The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite
