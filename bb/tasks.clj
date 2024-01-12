@@ -126,8 +126,7 @@
   (let [new-path  (boxart->path opts)
         exists?   (fs/exists? new-path)
         base-path (or base base-path)]
-    (when (and exists? overwrite)
-      (fs/delete new-path))
+    (when (and exists? overwrite) (fs/delete new-path))
     (if (and (not overwrite) exists?)
       (println "Skipping existing new-path " new-path)
       (do

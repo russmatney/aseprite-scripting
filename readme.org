@@ -105,7 +105,9 @@ This depends on a few 'base' aseprite files existing:
 - ~assets/boxart/base_bg_no_logo.aseprite~
 
 The `_wide` version of the logo image was introduced to prevent the logo from
-cropping poorly - note that the resize_canvas script is not very sophisticated.
+cropping poorly - note that the resize_canvas script is not very sophisticated -
+it does a resize, a recenter, then a crop, which will certainly not work for
+every base_logo.
 
 The script could get smarter, and toggle the logo or background at generate-time
 via another passed option - but this was where I landed when shipping Dot Hop's

@@ -17,7 +17,7 @@ end
 
 function change_sprite_size(new_filename, w, h)
   local s = app.sprite
-  print("current sprite", s, s.width, s.height, s.pixelRatio)
+  print("current sprite", s, s.width, s.height)
 
   local longer
 
@@ -26,7 +26,6 @@ function change_sprite_size(new_filename, w, h)
   else
     longer = w
   end
-  print("resizing", w, h, "longer: ", longer)
 
   -- resize to larger dimension
   app.command.SpriteSize({ui=false, width=longer, height=longer, lockRatio=true})
