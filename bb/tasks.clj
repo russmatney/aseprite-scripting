@@ -77,25 +77,32 @@
   (-> (Runtime/getRuntime)
       (.addShutdownHook (Thread. #(println "\nShut down watcher."))))
   (println "watching dir:" (cwd))
-  (fw/watch (cwd) (fn [event]
-                    (let [ext (-> event :path fs/extension)]
-                      (when (#{"aseprite"} ext)
-                        (if (re-seq #"_sheet" (:path event))
-                          (println "Change event for" (:path event) "[bb] Ignoring.")
-                          (do
-                            (println "Change event for" (:path event) "[bb] Processing.")
-                            (export-pixels-sheet (:path event)))))))
-            {:delay-ms 100})
+  (fw/watch
+    (cwd)
+    (fn [event]
+      (let [ext (-> event :path fs/extension)]
+        (when (#{"aseprite"} ext)
+          (if (re-seq #"_sheet" (:path event))
+            (println "Change event for" (:path event) "[bb] Ignoring.")
+            (do
+              (println "Change event for" (:path event) "[bb] Processing.")
+              (export-pixels-sheet (:path event)))))))
+    {:delay-ms 100})
   @(promise))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; steam box art
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; constants
+
+(def boxart-dir "assets/boxart/")
 (def boxart-base-logo "assets/boxart/base_logo.aseprite")
 (def boxart-base-logo-wide "assets/boxart/base_logo_wide.aseprite")
 (def boxart-base-bg-no-logo "assets/boxart/base_bg_no_logo.aseprite")
 (def boxart-base-logo-no-bg "assets/boxart/base_logo_no_bg.aseprite")
+
+;; data
 
 (def boxart-defs
   (->>
@@ -113,59 +120,64 @@
     (map (fn [[label opts]] [label (assoc opts :label label)]))
     (into {})))
 
-(def boxart-dir "assets/boxart/")
+;; def -> path
 
-(defn boxart->path
-  ([b-opts] (boxart->path b-opts ".aseprite"))
+(defn- boxart->path
+  ([b-opts]
+   (boxart->path b-opts ".aseprite"))
   ([{:keys [label]} ext]
    (str boxart-dir (name label) ext)))
 
-(defn create-resized-file
-  [{:keys [base-path overwrite verbose?]}
-   {:keys [width height base] :as opts}]
+;; create new file
+
+(defn- create-resized-file [{:keys [width height base] :as opts}]
   (let [new-path  (boxart->path opts)
-        exists?   (fs/exists? new-path)
-        base-path (or base base-path)]
-    (when (and exists? overwrite) (fs/delete new-path))
-    (if (and (not overwrite) exists?)
-      (println "Skipping existing new-path " new-path)
-      (do
-        (println (str "Creating aseprite file: " (str new-path)))
-        (let [result (-> ^{:out :string}
-                         (p/$ ~(aseprite-bin-path) -b ;; 'batch' mode, don't open the UI
-                              ~base-path
-                              ;; pass script-params BEFORE --script arg
-                              --script-param ~(str "filename=" new-path)
-                              --script-param ~(str "width=" width)
-                              --script-param ~(str "height=" height)
-                              --script "scripts/resize_canvas.lua")
-                         p/check :out)]
-          (when verbose? (println result)))))))
+        base-path (or base boxart-base-logo)]
+
+    ;; delete file if one already exists
+    (when (fs/exists? new-path) (fs/delete new-path))
+
+    ;; invoke resize_canvas.lua with options
+    (println (str "Creating aseprite file: " (str new-path)))
+    (let [result (-> ^{:out :string}
+                     (p/$ ~(aseprite-bin-path) -b ;; 'batch' mode, don't open the UI
+                          ~base-path
+                          ;; pass script-params BEFORE --script arg
+                          --script-param ~(str "filename=" new-path)
+                          --script-param ~(str "width=" width)
+                          --script-param ~(str "height=" height)
+                          --script "scripts/resize_canvas.lua")
+                     p/check :out)]
+      (println result))))
 
 (comment
   (name :main-capsule)
-  (create-resized-file
-    {:base-path boxart-base-logo :overwrite true :verbose? true}
-    {:width 616 :height 353 :label :main-capsule}))
+  (create-resized-file {:width 616 :height 353 :label :main-capsule}))
 
-(defn generate-boxart-files []
-  (->> boxart-defs vals (remove #(-> % :skip-generate))
-       (map (partial create-resized-file
-                     {:base-path boxart-base-logo
-                      :verbose?  true
-                      :overwrite true}))
-       doall))
+;; export one aseprite file
 
-(defn aseprite-export-boxart-png [b-opts]
+(defn- aseprite-export-boxart [b-opts]
   (let [path     (boxart->path b-opts)
         png-path (boxart->path b-opts (:export-ext b-opts ".png"))]
     (println "Exporting" path "as" png-path)
     (-> (p/$ ~(aseprite-bin-path) -b ~path --save-as ~png-path)
         p/check :out)))
 
+;; public fns
+
+(defn generate-all-boxart []
+  (->> boxart-defs
+       vals
+       (remove :skip-generate)
+       (map create-resized-file)
+       doall))
+
 (defn export-all-boxart []
-  (->> boxart-defs vals (map aseprite-export-boxart-png) doall))
+  (->> boxart-defs
+       vals
+       (map aseprite-export-boxart)
+       doall))
 
 (comment
-  (generate-boxart-files)
+  (generate-all-boxart)
   (export-all-boxart))

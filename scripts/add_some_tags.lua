@@ -8,33 +8,9 @@ local tags = {
   "_grab", "_grabbed", "_throw", "thrown", "_hit_ground", "_get_up",
 }
 
-local color_wheel = {
-  Color{r=250, g=128, b=32}, -- orange
-  -- Color{r=250, g=32, b=32}, -- red
-  -- Color{r=32, g=250, b=32}, -- green
-  -- Color{r=32, g=32, b=250}, -- blue
-  Color{r=32, g=250, b=128}, -- ?
-  Color{r=32, g=128, b=250}, -- ?
-  Color{r=128, g=32, b=250}, -- ?
-  Color{r=128, g=250, b=32}, -- ?
-  Color{r=250, g=32, b=128}, -- ?
-}
-
 local existing_tags = {}
 for _,t in ipairs(app.sprite.tags) do
   existing_tags[t.name] = t
-end
-
--- colorize tags --------------------------------------------------------------
-
-function colorize_tags()
-  for i, t in ipairs(app.sprite.tags) do
-    t.color = color_wheel[i % #color_wheel + 1]
-    -- TODO support random fluctuations
-    -- t.color.red -= 10..20
-    -- t.color.green -= 10..20
-    -- t.color.blue -= 10..20
-  end
 end
 
 -- add-tags --------------------------------------------------------------
@@ -48,6 +24,26 @@ function add_tags()
       new_tag.name = t
       new_tag.color = Color{r=255, g=128, b=32}
     end
+  end
+end
+
+-- colorize tags --------------------------------------------------------------
+
+local color_wheel = {
+  Color{r=250, g=128, b=32}, -- orange
+  -- Color{r=250, g=32, b=32}, -- red
+  -- Color{r=32, g=250, b=32}, -- green
+  -- Color{r=32, g=32, b=250}, -- blue
+  Color{r=32, g=250, b=128}, -- ?
+  Color{r=32, g=128, b=250}, -- ?
+  Color{r=128, g=32, b=250}, -- ?
+  Color{r=128, g=250, b=32}, -- ?
+  Color{r=250, g=32, b=128}, -- ?
+}
+
+function colorize_tags()
+  for i, t in ipairs(app.sprite.tags) do
+    t.color = color_wheel[i % #color_wheel + 1]
   end
 end
 

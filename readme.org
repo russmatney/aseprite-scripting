@@ -26,6 +26,7 @@ my_art.aseprite
 Where ~hello_world.lua~ is:
 
 #+begin_src lua
+-- hello_world.lua
 app.transaction(
   "main", function()
     print("hello world!")
@@ -41,8 +42,8 @@ You can invoke the script with the Aseprite cli:
 #+begin_src sh
 aseprite -b \
     my_art.aseprite \
-    --script-param whatevs=foo
-    --script-param bananas=bar
+    --script-param whatevs=foo \
+    --script-param bananas=bar \
     --script hello_world.lua
 #+end_src
 
@@ -60,7 +61,7 @@ argument key:   whatevs value:  foo
 argument key:   bananas value:  bar
 #+end_src
 
-** Generating Box Art
+** Resize and export Box Art from a base image
 The [[file:scripts/resize_canvas.lua][resize_canvas.lua]] script can be passed to aseprite like:
 
 #+begin_src sh
@@ -94,7 +95,7 @@ required images, which looks something like:
 And they can all be generated and exported like:
 
 #+begin_src sh
-bb regenerate-boxart
+bb regen-boxart
 #+end_src
 
 This depends on a few 'base' aseprite files existing:
@@ -115,7 +116,8 @@ first Coming Soon images.
 
 ** Creating tags from a list
 The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite
-itself - see below for help Aseprite find your scripts.
+itself - see 'Invoking a script from aseprite' below to help Aseprite find your
+scripts.
 
 The use-case for this script was a need to create a large number of animations
 in several sprites. I got tired of creating tags by hand, when I already had a
@@ -143,6 +145,12 @@ the command (this is the benefit for running the code within
 There is the beginning of a color wheel idea to help distinguish all the new
 tags from each other. Perhaps this will be extended to support some more useful
 per-tag colors at some point.
+** Re-export aseprite sprite sheets on file-save
+A file-watcher and re-export strategy is available via babashka, and implemented
+in [[file:bb/tasks.clj][bb/tasks.clj]] - see ~watch~ and ~export-pixels-sheet~ for details.
+
+If you'd like more on this, let me know and I'll elaborate more here + add
+coverage to the video.
 
 * Invoking a script from aseprite
 Aseprite looks for script files in ~~/.config/aseprite/scripts/*~. (You can open

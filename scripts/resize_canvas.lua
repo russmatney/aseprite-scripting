@@ -1,5 +1,5 @@
 
--- useful reference: Kacper's extension: https://thkaspar.itch.io/center-image
+-- useful reference: Kacper Wozniak's extension: https://thkaspar.itch.io/center-image
 function center_sprite()
   local s = app.sprite
   for _, cel in ipairs(app.range.cels) do
@@ -19,21 +19,14 @@ function change_sprite_size(new_filename, w, h)
   local s = app.sprite
   print("current sprite", s, s.width, s.height)
 
-  local longer
-
-  if (w < h) then
-    longer = h
-  else
-    longer = w
-  end
-
   -- resize to larger dimension
-  app.command.SpriteSize({ui=false, width=longer, height=longer, lockRatio=true})
-  print("resized sprite to longer: ", longer, s.width, s.height)
+  app.command.SpriteSize({ui=false, width=s, height=h, lockRatio=true})
+  print("resized sprite: ", s.width, s.height)
 
+  -- center the sprite
   center_sprite()
 
-  -- crop shorter dimension
+  -- crop the shorter dimension
   local new_x = 0
   local new_y = 0
   local new_width = s.width

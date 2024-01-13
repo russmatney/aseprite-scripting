@@ -5,9 +5,9 @@
 
   watch tasks/watch
 
-  regenerate-boxart
+  regen-boxart
   {:description "Regenerate and re-export boxart"
    :task
    (do
-     (tasks/generate-boxart-files)
+     (tasks/generate-all-boxart)
      (tasks/export-all-boxart))}}}
