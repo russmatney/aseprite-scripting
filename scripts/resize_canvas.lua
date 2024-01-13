@@ -19,8 +19,16 @@ function change_sprite_size(new_filename, w, h)
   local s = app.sprite
   print("current sprite", s, s.width, s.height)
 
+  local longer
+
+  if (w < h) then
+    longer = h
+  else
+    longer = w
+  end
+
   -- resize to larger dimension
-  app.command.SpriteSize({ui=false, width=w, height=h, lockRatio=true})
+  app.command.SpriteSize({ui=false, width=longer, height=longer, lockRatio=true})
   print("resized sprite: ", s.width, s.height)
 
   -- center the sprite
