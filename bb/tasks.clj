@@ -15,7 +15,7 @@
 
 (defn replace-ext [p ext]
   (let [old-ext (fs/extension p)]
-    (string/replace (str p) old-ext ext)))
+    (string/replace (str p) (str "." old-ext) (str "." ext))))
 
 (defn ext-match? [p ext]
   (= (fs/extension p) ext))
@@ -58,16 +58,15 @@
             (->
               ^{:out :string}
               (p/$ ~(aseprite-bin-path) -b ~(str path)
-                   --format json-array
                    --sheet
-                   ~(-> path (replace-ext "png")
-                        (string/replace ".png" "_sheet.png"))
+                   ~(-> path (replace-ext "png") (string/replace ".png" "_sheet.png"))
                    --sheet-type horizontal
                    --list-tags
                    --list-slices
                    --list-layers)
               p/check :out)]
-        (when false #_verbose? (println result))))
+        ;; results are long and noisey
+        (when false (println result))))
     (println "Skipping path without aseprite extension" path)))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
