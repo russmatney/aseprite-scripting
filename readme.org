@@ -18,6 +18,37 @@ My goal is to share approaches to scripting Aseprite things.
 
 I hope these make it easier for you to create your own scripts and tools!
 
+** Creating tags from a list
+The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite
+itself - see 'Invoking a script from aseprite' below to help Aseprite find your
+scripts.
+
+The use-case for this script was a need to create a large number of animations
+in several sprites. I got tired of creating tags by hand, when I already had a
+list of them in text format.
+
+This script lets you define a big list of tags:
+
+#+begin_src lua
+local tags = {
+  -- Shared tags
+  "idle", "_jump", "_dead", "run", "air", "_knocked_back", "_dying",
+  "_landed", "walk", "_jump", "_jump_kick",
+  "_punch", "_punch_2", "_kick", "_punched", "_kicked",
+  "_grab", "_grabbed", "_throw", "thrown", "_hit_ground", "_get_up",
+}
+#+end_src
+
+It runs through each tag, and any tag that doesn't already exist on the sprite
+is created.
+
+Beware that there are some gotchas - if anything crazy happens, you can 'undo'
+the command (this is the benefit for running the code within
+~app.transaction("your-command", fn)~).
+
+There is the beginning of a color wheel idea to help distinguish all the new
+tags from each other. Perhaps this will be extended to support some more useful
+per-tag colors at some point.
 ** Aseprite CLI ~--script~ hello world
 
 Given a directory with files:
@@ -118,37 +149,6 @@ The script could get smarter, and toggle the logo or background at generate-time
 via another passed option - but this was where I landed when shipping Dot Hop's
 first Coming Soon images.
 
-** Creating tags from a list
-The [[file:scripts/add_some_tags.lua][add_some_tags.lua]] script is intended to be invoked from within Aseprite
-itself - see 'Invoking a script from aseprite' below to help Aseprite find your
-scripts.
-
-The use-case for this script was a need to create a large number of animations
-in several sprites. I got tired of creating tags by hand, when I already had a
-list of them in text format.
-
-This script lets you define a big list of tags:
-
-#+begin_src lua
-local tags = {
-  -- Shared tags
-  "idle", "_jump", "_dead", "run", "air", "_knocked_back", "_dying",
-  "_landed", "walk", "_jump", "_jump_kick",
-  "_punch", "_punch_2", "_kick", "_punched", "_kicked",
-  "_grab", "_grabbed", "_throw", "thrown", "_hit_ground", "_get_up",
-}
-#+end_src
-
-It runs through each tag, and any tag that doesn't already exist on the sprite
-is created.
-
-Beware that there are some gotchas - if anything crazy happens, you can 'undo'
-the command (this is the benefit for running the code within
-~app.transaction("your-command", fn)~).
-
-There is the beginning of a color wheel idea to help distinguish all the new
-tags from each other. Perhaps this will be extended to support some more useful
-per-tag colors at some point.
 ** Re-export aseprite sprite sheets on file-save
 A file-watcher and re-export strategy is available via babashka, and implemented
 in [[file:bb/tasks.clj][bb/tasks.clj]] - see ~watch~ and ~export-pixels-sheet~ for details.
