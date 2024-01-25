@@ -3,6 +3,10 @@
 Some approaches to automating [[https://www.aseprite.org/][Aseprite]] workflows, featuring lua and some
 [[https://github.com/babashka/babashka][babashka]] usage.
 
+I cover parts of this repo via Youtube devlogs:
+
+- Automating Aseprite tag creation: https://youtu.be/yKHnLkeyGzc
+
 * Examples
 These examples:
 
@@ -171,5 +175,6 @@ via ~File > Scripts > <project-name> > <script-name>~.
 * Aseprite Resources
 - API docs: https://www.aseprite.org/api/app#app
 - CLI docs: https://aseprite.org/docs/cli/
-- Bonus: Aseprite Extensions by Kacper Wozniak: https://thkaspar.itch.io/
-  worth the extensions and reading the code!
+- Aseprite Extensions by Kacper Wozniak: https://thkaspar.itch.io/
+- Big list of aseprite scripts: https://community.aseprite.org/t/aseprite-scripts-collection/3599/71
+- Godot Aseprite Wizard: https://github.com/viniciusgerevini/godot-aseprite-wizard
